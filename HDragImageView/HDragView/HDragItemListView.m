@@ -159,6 +159,16 @@
     }
 }
 
+//限制其他控件同时拖动，会计算出错的问题
+- (void)inactiveOtherItem:(BOOL)active withCurrenteView:(HDragItem*)currentItem{
+    for (HDragItem * item in self.items) {
+        if(![item  isEqual:currentItem]){
+            item.userInteractionEnabled = active;
+        }
+    }
+}
+
+
 // 拖动标签
 - (void)pan:(UIPanGestureRecognizer *)pan
 {
@@ -172,6 +182,7 @@
     
     HDragItem *tagButton = (HDragItem *)pan.view;
     
+    [self inactiveOtherItem:NO withCurrenteView:tagButton];
     // 开始
     if (pan.state == UIGestureRecognizerStateBegan) {
         _oriCenter = tagButton.center;
@@ -272,7 +283,7 @@
                 tagButton.top = tagButton.top - rect.origin.y;
             }
         }];
-        
+        [self inactiveOtherItem:NO withCurrenteView:tagButton];
     }
     
     [pan setTranslation:CGPointZero inView:self];
